@@ -1,6 +1,7 @@
 import { Readable, Stream } from 'stream'
 import { Session } from 'electron'
 import { Agent } from 'https'
+import { AuthInfo, WebContents, AuthenticationResponseDetails, Event as ElectronEvent } from 'electron'
 
 export default fetch
 
@@ -110,6 +111,14 @@ export interface RequestInit {
   user?: string
   // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
   password?: string
+  // When running on Electron behind an authenticated HTTP proxy, use a custom authentication callback
+  onLogin?: (
+      event: ElectronEvent,
+      webContents: WebContents,
+      details: AuthenticationResponseDetails,
+      authInfo: AuthInfo,
+      callback: (username: string | null, password: string | null) => void
+  ) => void;
 }
 
 export type RequestInfo = Request | string

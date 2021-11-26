@@ -106,8 +106,10 @@ export default function fetch (url, opts = {}) {
 
     if (request.useElectronNet) {
       // handle authenticating proxies
-      req.on('login', (authInfo, callback) => {
-        if (opts.user && opts.password) {
+      req.on('login', (event, webContents, details, authInfo, callback) => {
+        if (opts.onLogin) {
+          opts.onLogin(event, webContents, details, authInfo, callback)
+        } else if (opts.user && opts.password) {
           callback(opts.user, opts.password)
         } else {
           cancelRequest()
