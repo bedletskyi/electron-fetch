@@ -112,10 +112,7 @@ export interface RequestInit {
   // When running on Electron behind an authenticated HTTP proxy, password to use to authenticate
   password?: string
   // When running on Electron behind an authenticated HTTP proxy, use a custom authentication callback
-  onLogin?: (
-      authInfo: AuthInfo,
-      callback: (username: string | null, password: string | null) => void
-  ) => void;
+  onLogin?: (authInfo: AuthInfo) => Promise<{username: string, password: string}>;
 }
 
 export type RequestInfo = Request | string

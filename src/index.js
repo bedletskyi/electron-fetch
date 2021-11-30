@@ -104,6 +104,27 @@ export default function fetch (url, opts = {}) {
       }, request.timeout)
     }
 
+    if (request.useElectronNet) {
+      // handle authenticating proxies
+      req.on('login', (authInfo, callback) => {
+        if (opts.onLogin) {
+          opts.onLogin(authInfo, callback)
+            .then(data => {
+              callback(data.username, data.password)
+            })
+            .catch(err => {
+              cancelRequest()
+              reject(new FetchError(`login to ${authInfo.host} failed, reason: ${err.message}`, 'proxy', err))
+            })
+        } else if (opts.user && opts.password) {
+          callback(opts.user, opts.password)
+        } else {
+          cancelRequest()
+          reject(new FetchError(`login event received from ${authInfo.host} but no credentials provided`, 'proxy', { code: 'PROXY_AUTH_FAILED' }))
+        }
+      })
+    }
+
     req.on('error', err => {
       clearTimeout(reqTimeout)
       if (request.signal) {
